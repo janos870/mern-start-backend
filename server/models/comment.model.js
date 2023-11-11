@@ -4,7 +4,8 @@ const commentSchema = new mongoose.Schema({
   text: String,
   author: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User'
+    ref: 'User',
+    require: true,
   }
 }, {timestamps: true });
 

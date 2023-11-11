@@ -6,6 +6,7 @@ import bodyParser from 'body-parser';
 
 import postRoute from './routes/post.route.js';
 import authRoute from './routes/auth.route.js';
+import commentRoute from './routes/comment.route.js';
 
 dotenv.config();
 
@@ -18,6 +19,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use('/', postRoute);
 app.use('/auth', authRoute);
+app.use('/comment', commentRoute);
 
 mongoose
   .connect(process.env.MONGODB_URI)

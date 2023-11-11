@@ -44,11 +44,11 @@ export const createPost = async (req, res) => {
 // update a post
 export const updatePost = async (req, res) => {
   const { id } = req.params;
-  const { title, content, author, likes, image } = req.body;
+  const { title, content, image } = req.body;
   try {
     const updatedPost = await Post.findByIdAndUpdate(
       id,
-      { title, content, author, likes, image },
+      { title, content, image },
       { new: true }
     );
     res
