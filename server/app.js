@@ -5,6 +5,7 @@ import cors from 'cors';
 import bodyParser from 'body-parser';
 
 import postRoute from './routes/post.route.js';
+import authRoute from './routes/auth.route.js';
 
 dotenv.config();
 
@@ -16,6 +17,7 @@ app.use(express.json())
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use('/', postRoute);
+app.use('/auth', authRoute);
 
 mongoose
   .connect(process.env.MONGODB_URI)
