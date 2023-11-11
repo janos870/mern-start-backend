@@ -1,4 +1,5 @@
 import Post from "../models/post.model.js";
+import User from "../models/user.model.js";
 
 // get posts
 export const posts = async (req, res) => {
@@ -12,10 +13,26 @@ export const posts = async (req, res) => {
 
 // create post
 export const createPost = async (req, res) => {
-  const { title, content, author, likes, image } = req.body;
-
+  const { title, content, likes, image } = req.body;
   try {
-    const newPost = new Post({ title, content, author, likes, image });
+    if (!req.user || !req.user._id) {
+      return res.status(401).json({ message: "Unauthorized. User not found." });
+    }
+    const authorId = req.user._id;
+    const author = await User.findById(authorId, "username profilePicture");
+    const newPost = new Post({
+      title,
+      content,
+      author: {
+        id: authorId,
+        username: author ? author.username : "Unknown",
+        profilePicture: author
+          ? author.profilePicture
+          : "default-profile-picture-url",
+      },
+      likes,
+      image,
+    });
     await newPost.save();
     res.status(200).json({ message: "Post successfully created!", newPost });
   } catch (error) {
@@ -28,10 +45,15 @@ export const createPost = async (req, res) => {
 export const updatePost = async (req, res) => {
   const { id } = req.params;
   const { title, content, author, likes, image } = req.body;
-
   try {
-    const updatedPost = await Post.findByIdAndUpdate(id, { title, content, author, likes, image }, { new: true });
-    res.status(200).json({ message: "Post successfully updated!", updatedPost });
+    const updatedPost = await Post.findByIdAndUpdate(
+      id,
+      { title, content, author, likes, image },
+      { new: true }
+    );
+    res
+      .status(200)
+      .json({ message: "Post successfully updated!", updatedPost });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error occurred while updating the post" });
@@ -41,10 +63,11 @@ export const updatePost = async (req, res) => {
 // delete a post
 export const deletePost = async (req, res) => {
   const { id } = req.params;
-
   try {
     const deletedPost = await Post.findByIdAndDelete(id);
-    res.status(200).json({ message: "Post successfully deleted!", deletedPost });
+    res
+      .status(200)
+      .json({ message: "Post successfully deleted!", deletedPost });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error occurred while deleting the post" });
